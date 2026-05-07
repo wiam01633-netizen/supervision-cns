@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPIs - Supervision CNS</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <style>
+        .kpi-header {
+            background: #1a3a5c;
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .kpi-header h1 {
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .btn-retour {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .btn-retour:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            padding: 16px 24px;
+        }
+
+        .kpi-card {
+            background: white;
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+        }
+
+        .kpi-card .kpi-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .kpi-card .kpi-value {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .kpi-card .kpi-unit {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            padding: 0 24px 24px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .chart-card h3 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #9ca3af;
+            padding: 40px;
+            font-size: 14px;
+        }
+        .chart-card canvas {
+    max-height: 200px !important;
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding: 0 24px 24px;
+}
+    </style>
+</head>
+<body>
+
+    <!-- ── HEADER ── -->
+    <div class="kpi-header">
+        <div>
+            <h1>📊 Tableau de bord KPIs — Supervision CNS</h1>
+            <p style="font-size:12px; opacity:0.7; margin-top:4px;">
+                Indicateurs de performance en temps réel
+            </p>
+        </div>
+        <button class="btn-retour" onclick="window.location.href='index.html'">
+            ← Retour au dashboard
+        </button>
+    </div>
+
+    <!-- ── KPI CARDS ── -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <p class="kpi-label">Total Alarmes</p>
+            <p class="kpi-value" id="kpi-total" style="color:#1a3a5c">...</p>
+            <p class="kpi-unit">depuis le début</p>
+        </div>
+        <div class="kpi-card">
+            <p class="kpi-label">Alarmes Actives</p>
+            <p class="kpi-value" id="kpi-actives" style="color:#dc2626">...</p>
+            <p class="kpi-unit">non acquittées</p>
+        </div>
+        <div class="kpi-card">
+            <p class="kpi-label">Taux Disponibilité</p>
+            <p class="kpi-value" id="kpi-dispo" style="color:#16a34a">...</p>
+            <p class="kpi-unit">% systèmes OK</p>
+        </div>
+        <div class="kpi-card">
+            <p class="kpi-label">MTTR Moyen</p>
+            <p class="kpi-value" id="kpi-mttr" style="color:#d97706">...</p>
+            <p class="kpi-unit">secondes</p>
+        </div>
+    </div>
+
+    <!-- ── GRAPHIQUES ── -->
+    <div class="charts-grid">
+
+        <!-- Graphique 1 — Alarmes par système -->
+        <div class="chart-card">
+            <h3>Alarmes par système</h3>
+            <canvas id="chart-systemes"></canvas>
+        </div>
+
+        <!-- Graphique 2 — Répartition états -->
+        <div class="chart-card">
+            <h3>Répartition des états</h3>
+            <canvas id="chart-etats"></canvas>
+        </div>
+
+        <!-- Graphique 3 — Évolution alarmes -->
+        <div class="chart-card">
+            <h3>Évolution des alarmes</h3>
+            <canvas id="chart-evolution"></canvas>
+        </div>
+
+        <!-- Graphique 4 — MTTR par système -->
+        <div class="chart-card">
+            <h3>MTTR par système (secondes)</h3>
+            <canvas id="chart-mttr"></canvas>
+        </div>
+
+    </div>
+
+    <script>
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
+
+    const API = 'http://127.0.0.1:8000';
+
+    // ── Charger les KPIs ──
+    async function chargerKPIs() {
+    try {
+        const response1 = await fetch(API + '/api/kpi/alarmes');
+        if (!response1.ok) throw new Error('Erreur API alarmes');
+        const alarmes = await response1.json();
+
+        const response2 = await fetch(API + '/api/kpi/etats');
+        if (!response2.ok) throw new Error('Erreur API etats');
+        const etats = await response2.json();
+
+        // ── KPI Cards ──
+        document.getElementById('kpi-total').textContent   = alarmes.total;
+        document.getElementById('kpi-actives').textContent = alarmes.actives;
+        document.getElementById('kpi-mttr').textContent    = alarmes.mttr_secondes + 's';
+        document.getElementById('kpi-dispo').textContent   = etats.taux_disponibilite + '%';
+
+        // ── Graphiques ──
+        if (alarmes.par_systeme?.length > 0)
+            dessinerAlarmesSystemes(alarmes.par_systeme);
+        if (etats.repartition)
+            dessinerEtats(etats.repartition);
+        if (alarmes.evolution?.length > 0)
+            dessinerEvolution(alarmes.evolution);
+        if (alarmes.mttr_par_systeme?.length > 0)
+            dessinerMTTR(alarmes.mttr_par_systeme);
+
+    } catch(e) {
+        console.error('Erreur:', e);
+    }
+}
+
+    // ── Graphique 1 — Alarmes par système ──
+    function dessinerAlarmesSystemes(data) {
+        new Chart(document.getElementById('chart-systemes'), {
+            type: 'bar',
+            data: {
+                labels: data.map(d => d.nom),
+                datasets: [{
+                    label: 'Nombre d\'alarmes',
+                    data: data.map(d => d.total),
+                    backgroundColor: '#dc2626',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+
+    // ── Graphique 2 — Répartition états ──
+    function dessinerEtats(data) {
+        new Chart(document.getElementById('chart-etats'), {
+            type: 'doughnut',
+            data: {
+                labels: ['OK', 'ALARM', 'FAULT'],
+                datasets: [{
+                    data: [data.ok, data.alarm, data.fault],
+                    backgroundColor: ['#16a34a', '#dc2626', '#d97706'],
+                    borderWidth: 0
+                }]
+            },
+            options: { responsive: true }
+        });
+    }
+
+    // ── Graphique 3 — Évolution ──
+    function dessinerEvolution(data) {
+        new Chart(document.getElementById('chart-evolution'), {
+            type: 'line',
+            data: {
+                labels: data.map(d => d.heure),
+                datasets: [{
+                    label: 'Alarmes',
+                    data: data.map(d => d.total),
+                    borderColor: '#dc2626',
+                    backgroundColor: 'rgba(220,38,38,0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: { responsive: true }
+        });
+    }
+
+    // ── Graphique 4 — MTTR par système ──
+    function dessinerMTTR(data) {
+        new Chart(document.getElementById('chart-mttr'), {
+            type: 'bar',
+            data: {
+                labels: data.map(d => d.nom),
+                datasets: [{
+                    label: 'MTTR (secondes)',
+                    data: data.map(d => d.mttr),
+                    backgroundColor: '#d97706',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+
+    // ── Charger au démarrage ──
+    chargerKPIs();
+
+    // ── Actualiser toutes les 30s ──
+    setInterval(chargerKPIs, 10000);
+    </script>
+
+</body>
+</html>

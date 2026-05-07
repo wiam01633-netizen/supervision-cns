@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supervision CNS - ESA</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="header">
+        <div class="header-gauche">
+            <h1>Supervision CNS — Salle de Permanence ESA</h1>
+            <p class="live">
+                <span class="point-vert"></span>
+                En direct · Mis à jour il y a <span id="derniere-maj">0</span>s
+            </p>
+        </div>
+        <div class="header-droite">
+            <p id="operateur">Opérateur : chargement...</p>
+            <p id="heure-actuelle"></p>
+            <button onclick="window.location.href='kpi.html'" class="btn-powerbi">
+        📊 Tableau de bord KPIs
+    </button>
+        </div>
+    </div>
+
+    <div class="section-metriques">
+        <div class="carte-metrique">
+            <p class="label">Systèmes OK</p>
+            <p class="valeur ok" id="compteur-ok">...</p>
+        </div>
+        <div class="carte-metrique">
+            <p class="label">En alarme</p>
+            <p class="valeur alarm" id="compteur-alarm">...</p>
+        </div>
+        <div class="carte-metrique">
+            <p class="label">En défaut</p>
+            <p class="valeur fault" id="compteur-fault">...</p>
+        </div>
+        <div class="carte-metrique">
+            <p class="label">Total supervisés</p>
+            <p class="valeur total" id="compteur-total">...</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="titre-section">État des systèmes CNS</h2>
+        <div class="grille-systemes" id="grille-systemes">
+
+            <div class="carte-systeme ok-card" id="sys-1">
+                <p class="sys-nom">VOR</p>
+                <p class="sys-type">Navigation · SNMP</p>
+                <span class="badge">...</span>
+                <p class="sys-heure">--:--:--</p>
+            </div>
+
+            <div class="carte-systeme ok-card" id="sys-2">
+                <p class="sys-nom">ILS LOC</p>
+                <p class="sys-type">Navigation · SNMP</p>
+                <span class="badge">...</span>
+                <p class="sys-heure">--:--:--</p>
+            </div>
+
+            <div class="carte-systeme ok-card" id="sys-3">
+                <p class="sys-nom">DME</p>
+                <p class="sys-type">Navigation · TCP/IP</p>
+                <span class="badge">...</span>
+                <p class="sys-heure">--:--:--</p>
+            </div>
+
+            <div class="carte-systeme ok-card" id="sys-5">
+                <p class="sys-nom">VHF COM 1</p>
+                <p class="sys-type">Communication · I/O</p>
+                <span class="badge">...</span>
+                <p class="sys-heure">--:--:--</p>
+            </div>
+
+            <div class="carte-systeme ok-card" id="sys-7">
+                <p class="sys-nom">ILS GLIDE</p>
+                <p class="sys-type">Navigation · SNMP</p>
+                <span class="badge">...</span>
+                <p class="sys-heure">--:--:--</p>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="titre-section">Journal des alarmes</h2>
+        <div class="tableau-container">
+            <table class="tableau-alarmes">
+                <thead>
+                    <tr>
+                        <th>Heure</th>
+                        <th>Système</th>
+                        <th>Type</th>
+                        <th>État</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <!-- ✅ Vide — rempli par WebSocket -->
+                <tbody id="corps-alarmes"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>

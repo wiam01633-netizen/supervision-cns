@@ -1,0 +1,353 @@
+/* ─────────────────────────────
+   RESET GLOBAL
+───────────────────────────── */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+body {
+    background-color: #f0f2f5;
+    color: #1a1a1a;
+}
+
+/* ─────────────────────────────
+   HEADER
+───────────────────────────── */
+.header {
+    background-color: #1a3a5c;
+    color: white;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.live {
+    font-size: 12px;
+    opacity: 0.8;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.point-vert {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4ade80;
+    display: inline-block;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.header-droite {
+    text-align: right;
+    font-size: 13px;
+    opacity: 0.85;
+}
+.btn-powerbi {
+    background: #f2c811;
+    color: #1a1a1a;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: background 0.2s;
+}
+
+.btn-powerbi:hover {
+    background: #e6b800;
+}
+
+/* ─────────────────────────────
+   MÉTRIQUES
+───────────────────────────── */
+.section-metriques {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    padding: 16px 24px;
+}
+
+.carte-metrique {
+    background: white;
+    border-radius: 10px;
+    padding: 14px 18px;
+    border: 1px solid #e5e7eb;
+}
+
+.label {
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 6px;
+}
+
+.valeur {
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.ok { color: #16a34a; }
+.alarm { color: #dc2626; }
+.fault { color: #d97706; }
+.total { color: #1a3a5c; }
+
+/* ─────────────────────────────
+   SECTIONS
+───────────────────────────── */
+.section {
+    padding: 0 24px 20px;
+}
+
+.titre-section {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+}
+
+/* ─────────────────────────────
+   GRILLE SYSTÈMES
+───────────────────────────── */
+.grille-systemes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.carte-systeme {
+    background: white;
+    border-radius: 10px;
+    padding: 12px 16px;
+    border: 1px solid #e5e7eb;
+    border-left-width: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.ok-card { border-left-color: #16a34a; }
+.alarm-card { border-left-color: #dc2626; }
+.fault-card { border-left-color: #d97706; }
+
+.sys-nom {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.sys-type {
+    font-size: 11px;
+    color: #6b7280;
+}
+
+.sys-heure {
+    font-size: 10px;
+    color: #9ca3af;
+}
+
+/* ─────────────────────────────
+   BADGES
+───────────────────────────── */
+.badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 99px;
+    display: inline-block;
+    width: fit-content;
+}
+
+.badge-ok {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge-alarm {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-fault {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+/* ─────────────────────────────
+   TABLEAU ALARMES
+───────────────────────────── */
+.tableau-container {
+    background: white;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+}
+
+.tableau-alarmes {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.tableau-alarmes th {
+    text-align: left;
+    padding: 10px 14px;
+    background: #f9fafb;
+    color: #6b7280;
+    font-weight: 600;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.tableau-alarmes td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.tableau-alarmes tr:last-child td {
+    border-bottom: none;
+}
+
+/* ─────────────────────────────
+   BOUTON ACQUITTER
+───────────────────────────── */
+.btn-acquitter {
+    font-size: 11px;
+    padding: 4px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: white;
+    color: #374151;
+    cursor: pointer;
+}
+
+.btn-acquitter:hover {
+    background: #f3f4f6;
+}
+
+/* ─────────────────────────────
+   LOGIN PAGE
+───────────────────────────── */
+.login-body {
+    background: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.login-container {
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid #e5e7eb;
+}
+
+.login-logo {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.logo-icon {
+    width: 64px;
+    height: 64px;
+    background: #1a3a5c;
+    color: white;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 auto 12px;
+}
+
+.login-logo h1 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.login-logo p {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+/* FORM */
+.login-form .champ {
+    margin-bottom: 16px;
+}
+
+.login-form label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 6px;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.2s;
+}
+
+.login-form input:focus {
+    border-color: #1a3a5c;
+}
+
+.login-form button {
+    width: 100%;
+    padding: 12px;
+    background: #1a3a5c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.2s;
+}
+
+.login-form button:hover {
+    background: #243f6b;
+}
+
+.login-form button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ERREUR */
+.erreur {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    border: 1px solid #fca5a5;
+}

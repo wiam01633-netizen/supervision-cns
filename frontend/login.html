@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Connexion - Supervision CNS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        /* ── BODY — image en arrière-plan ── */
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* ── IMAGE PLEIN ÉCRAN ── */
+        .login-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .login-bg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* ── OVERLAY TRÈS LÉGER ── */
+        .login-bg-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        /* ── TEXTE EN BAS À GAUCHE ── */
+        .login-left-text {
+            position: fixed;
+            bottom: 40px;
+            left: 40px;
+            z-index: 1;
+        }
+
+        .login-left-text h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+
+        .login-left-text p {
+            font-size: 14px;
+            color: rgba(255,255,255,0.9);
+            max-width: 400px;
+            line-height: 1.6;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+        }
+
+        .badge-live {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 99px;
+            font-size: 12px;
+            margin-bottom: 12px;
+            width: fit-content;
+            backdrop-filter: blur(4px);
+        }
+
+        .point-vert {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.3; }
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 24px;
+            margin-top: 16px;
+        }
+
+        .stat-item .val {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+
+        .stat-item .lbl {
+            font-size: 11px;
+            color: rgba(255,255,255,0.7);
+            margin-top: 2px;
+        }
+
+        /* ── FORMULAIRE CENTRÉ ── */
+        .login-right {
+            position: relative;
+            z-index: 1;
+            width: 420px;
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 20px;
+            padding: 48px 40px;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #6b21a8, #9333ea);
+            color: white;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0 auto 14px;
+            box-shadow: 0 8px 24px rgba(147,51,234,0.25);
+        }
+
+        .login-logo h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a3a5c;
+            margin-bottom: 4px;
+        }
+
+        .login-logo p {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .champ {
+            margin-bottom: 18px;
+        }
+
+        .champ label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .champ input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #f0f4ff;
+            border: 1px solid #bfcfff;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #1a1a1a;
+            outline: none;
+            transition: border 0.2s, background 0.2s;
+        }
+
+        .champ input::placeholder {
+            color: #9ca3af;
+        }
+
+        .champ input:focus {
+            border-color: #9333ea;
+            background: #faf5ff;
+            box-shadow: 0 0 0 3px rgba(147,51,234,0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, #6b21a8, #9333ea);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: opacity 0.2s, transform 0.1s;
+            box-shadow: 0 4px 16px rgba(147,51,234,0.3);
+        }
+
+        .btn-login:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .erreur {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            border: 1px solid #fca5a5;
+        }
+
+        .login-footer {
+            margin-top: 28px;
+            text-align: center;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── IMAGE ARRIÈRE-PLAN ── -->
+    <div class="login-bg">
+        <img src="bg-airport.webp"
+             alt="Aéroport Fès-Saïss"
+             onerror="this.style.background='#1a3a5c'"/>
+        <div class="login-bg-overlay"></div>
+    </div>
+
+    <!-- ── TEXTE BAS GAUCHE ── -->
+    <div class="login-left-text">
+        <div class="badge-live">
+            <span class="point-vert"></span>
+            Système de supervision actif
+        </div>
+        <h2>Supervision CNS</h2>
+        <p>Salle de Permanence — Aéroport Fès-Saïss<br>
+        Système de surveillance en temps réel des équipements
+        de navigation, communication et surveillance.</p>
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="val">24/7</div>
+                <div class="lbl">Surveillance continue</div>
+            </div>
+            <div class="stat-item">
+                <div class="val">ESA</div>
+                <div class="lbl">Aéroport Fès-Saïss</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── FORMULAIRE CENTRÉ ── -->
+    <div class="login-right">
+        <div class="login-logo">
+            <div class="logo-icon">CNS</div>
+            <h1>Supervision ESA</h1>
+            <p>Connectez-vous pour accéder au système</p>
+        </div>
+
+        <div id="erreur" class="erreur" style="display:none"></div>
+
+        <div class="champ">
+            <label>Nom d'utilisateur</label>
+            <input type="text" id="username"
+                   placeholder="admin"
+                   autocomplete="username"/>
+        </div>
+
+        <div class="champ">
+            <label>Mot de passe</label>
+            <input type="password" id="password"
+                   placeholder="••••••••"
+                   autocomplete="current-password"/>
+        </div>
+
+        <button class="btn-login" id="btn-login" onclick="seConnecter()">
+            Se connecter
+        </button>
+
+        <div class="login-footer">
+            © 2026 ESA — Aéroport Fès-Saïss · Système CNS
+        </div>
+    </div>
+
+    <script>
+    async function seConnecter() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const erreur   = document.getElementById('erreur');
+        const btn      = document.getElementById('btn-login');
+
+        if (!username || !password) {
+            afficherErreur("Veuillez remplir tous les champs");
+            return;
+        }
+
+        btn.textContent = "Connexion...";
+        btn.disabled    = true;
+
+        try {
+            const formData = new FormData();
+            formData.append('username', username);
+            formData.append('password', password);
+
+            const response = await fetch('http://localhost:8000/api/login', {
+                method: 'POST',
+                body:   formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                localStorage.setItem('token', data.access_token);
+                localStorage.setItem('nom',   data.nom);
+                localStorage.setItem('role',  data.role);
+                window.location.href = 'index.html';
+            } else {
+                afficherErreur(data.detail || "Identifiants incorrects");
+            }
+        } catch (e) {
+            afficherErreur("Impossible de contacter le serveur");
+        }
+
+        btn.textContent = "Se connecter";
+        btn.disabled    = false;
+    }
+
+    function afficherErreur(msg) {
+        const erreur = document.getElementById('erreur');
+        erreur.textContent = msg;
+        erreur.style.display = 'block';
+    }
+
+    document.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') seConnecter();
+    });
+    </script>
+
+</body>
+</html>
