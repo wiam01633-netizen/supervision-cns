@@ -60,7 +60,7 @@ def generate_data():
             conn.rollback()   # ✅ Important : rollback en cas d'erreur
 
 # Ajouter à la fin de app.py
-if __name__ == "__main__":
+if __name__ == "__main__": 
     thread = threading.Thread(target=generate_data, daemon=True)
-    thread.start()
-    socketio.run(app, port=5001)  # ✅ Changer 5000 → 5001
+thread.start() 
+socketio.run(app, port=5001) # ✅ Changer 5000 → 5001
