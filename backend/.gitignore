@@ -1,0 +1,15 @@
+# Fichiers sensibles
+.env
+*.pkl
+*.joblib
+ 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+ 
+# Base de données
+*.sqlite
+*.db

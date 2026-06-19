@@ -6,6 +6,9 @@
     <title>Supervision CNS - ESA</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
+
+</script>
 <body>
 
     <div class="header">
@@ -19,10 +22,13 @@
         <div class="header-droite">
             <p id="operateur">Opérateur : chargement...</p>
             <p id="heure-actuelle"></p>
-            <button onclick="window.location.href='kpi.html'" class="btn-powerbi">
-        📊 Tableau de bord KPIs
-    </button>
-        </div>
+           <button onclick="window.location.href='kpi.html'" class="btn-powerbi">
+    📊 KPIs
+</button>
+<button onclick="window.location.href='historique.html'" class="btn-powerbi" style="background:#e0f2fe;color:#0369a1;">
+    📋 Historique
+</button>  <!-- ✅ Fermé correctement -->
+</div>
     </div>
 
     <div class="section-metriques">
@@ -49,39 +55,46 @@
         <div class="grille-systemes" id="grille-systemes">
 
             <div class="carte-systeme ok-card" id="sys-1">
-                <p class="sys-nom">VOR</p>
-                <p class="sys-type">Navigation · SNMP</p>
-                <span class="badge">...</span>
-                <p class="sys-heure">--:--:--</p>
-            </div>
+    <p class="sys-nom">VOR</p>
+    <p class="sys-type">Navigation · SNMP</p>
+    <span class="badge">...</span>
+    <p class="sys-heure">--:--:--</p>
+</div>
 
-            <div class="carte-systeme ok-card" id="sys-2">
-                <p class="sys-nom">ILS LOC</p>
-                <p class="sys-type">Navigation · SNMP</p>
-                <span class="badge">...</span>
-                <p class="sys-heure">--:--:--</p>
-            </div>
+<div class="carte-systeme ok-card" id="sys-2">
+    <p class="sys-nom">Localiser</p>
+    <p class="sys-type">Navigation · SNMP</p>
+    <span class="badge">...</span>
+    <p class="sys-heure">--:--:--</p>
+</div>
 
-            <div class="carte-systeme ok-card" id="sys-3">
-                <p class="sys-nom">DME</p>
-                <p class="sys-type">Navigation · TCP/IP</p>
-                <span class="badge">...</span>
-                <p class="sys-heure">--:--:--</p>
-            </div>
+<div class="carte-systeme ok-card" id="sys-3">
+    <p class="sys-nom">DME VOR</p>
+    <p class="sys-type">Navigation · SNMP</p>
+    <span class="badge">...</span>
+    <p class="sys-heure">--:--:--</p>
+</div>
 
-            <div class="carte-systeme ok-card" id="sys-5">
-                <p class="sys-nom">VHF COM 1</p>
-                <p class="sys-type">Communication · I/O</p>
-                <span class="badge">...</span>
-                <p class="sys-heure">--:--:--</p>
-            </div>
+<div class="carte-systeme ok-card" id="sys-4">
+    <p class="sys-nom">DME Glide</p>
+    <p class="sys-type">Navigation · SNMP</p>
+    <span class="badge">...</span>
+    <p class="sys-heure">--:--:--</p>
+</div>
 
-            <div class="carte-systeme ok-card" id="sys-7">
-                <p class="sys-nom">ILS GLIDE</p>
-                <p class="sys-type">Navigation · SNMP</p>
-                <span class="badge">...</span>
-                <p class="sys-heure">--:--:--</p>
-            </div>
+<div class="carte-systeme ok-card" id="sys-5">
+    <p class="sys-nom">VHF COM 1</p>
+    <p class="sys-type">Communication · RS-232</p>
+    <span class="badge">...</span>
+    <p class="sys-heure">--:--:--</p>
+</div>
+
+<div class="carte-systeme ok-card" id="sys-7">
+    <p class="sys-nom">Glide</p>
+    <p class="sys-type">Navigation · SNMP</p>
+    <span class="badge">...</span>
+    <p class="sys-heure">--:--:--</p>
+</div>
 
         </div>
     </div>
@@ -100,8 +113,15 @@
                     </tr>
                 </thead>
                 <!-- ✅ Vide — rempli par WebSocket -->
-                <tbody id="corps-alarmes"></tbody>
+                <tbody id="corps-alarmes"></tbody>                
             </table>
+        </div>
+    </div>
+    <!-- ── PRÉDICTIONS IA ── -->
+    <div class="section">
+        <h2 class="titre-section">🤖 Prédictions IA — Risques de panne</h2>
+        <div class="grille-systemes" id="grille-predictions">
+           <p style="color:#9ca3af; padding:16px;">Chargement des prédictions...</p>
         </div>
     </div>
 

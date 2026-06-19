@@ -1,37 +1,41 @@
-# collectors/serial.py
-import serial
+# collectors/serial.py — Collecteur RS-232 VHF COM 1
+# Mode simulation si pas de port série disponible
+import os
 
-def collecter_serie(port, baudrate=9600, commande='STATUS\r\n'):
+PORT_SERIE = os.getenv("SERIAL_PORT", None)   # None = simulation
+BAUDRATE   = 9600
+COMMANDE   = 'STATUS\r\n'
+
+def collecter_serie(port=None, baudrate=9600, commande='STATUS\r\n'):
     """
-    Interroge un équipement via RS-232 ou RS-485
+    Interroge VHF COM 1 via RS-232
+    Si PORT_SERIE non configuré → simulation automatique
     """
+    port = port or PORT_SERIE
+
+    # ── Mode simulation ──
+    if not port:
+        from collectors.serial_simulator import collecter_serie_simule
+        return collecter_serie_simule()
+
+    # ── Mode réel ──
     try:
-        ser = serial.Serial(
-            port=port,          # ex: 'COM3' sur Windows ou '/dev/ttyUSB0' sur Linux
-            baudrate=baudrate,
-            timeout=2
-        )
-        # Envoie la commande à l'équipement
+        import serial
+        ser = serial.Serial(port=port, baudrate=baudrate, timeout=2)
         ser.write(commande.encode('utf-8'))
-
-        # Lit la réponse
         reponse = ser.readline().decode('utf-8').strip()
         ser.close()
-
         return {
-            "etat": normaliser_serie(reponse),
-            "valeur": reponse
+            "etat":   normaliser_serie(reponse),
+            "valeur": reponse,
+            "source": "serial"
         }
-
-    except serial.SerialException as e:
-        return {"etat": "FAULT", "valeur": str(e)}
-
+    except Exception as e:
+        return {"etat": "FAULT", "valeur": str(e), "source": "serial_error"}
 
 def normaliser_serie(reponse):
     reponse = reponse.upper()
-    if "OK" in reponse or "NORMAL" in reponse:
-        return "OK"
-    elif "ALARM" in reponse or "FAIL" in reponse:
-        return "ALARM"
-    else:
-        return "UNKNOWN"
+    if "OK" in reponse or "NORMAL" in reponse:   return "OK"
+    elif "ALARM" in reponse or "FAIL" in reponse: return "ALARM"
+    elif "FAULT" in reponse:                       return "FAULT"
+    else:                                          return "UNKNOWN"

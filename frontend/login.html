@@ -275,11 +275,18 @@
         <div id="erreur" class="erreur" style="display:none"></div>
 
         <div class="champ">
-            <label>Nom d'utilisateur</label>
-            <input type="text" id="username"
-                   placeholder="admin"
-                   autocomplete="username"/>
-        </div>
+    <label>Nom</label>
+    <input type="text" id="nom"
+           placeholder="Alami"
+           autocomplete="family-name"/>
+</div>
+
+<div class="champ">
+    <label>Prénom</label>
+    <input type="text" id="prenom"
+           placeholder="Mohamed"
+           autocomplete="given-name"/>
+</div>
 
         <div class="champ">
             <label>Mot de passe</label>
@@ -299,46 +306,51 @@
 
     <script>
     async function seConnecter() {
-        const username = document.getElementById('username').value.trim();
-        const password = document.getElementById('password').value.trim();
-        const erreur   = document.getElementById('erreur');
-        const btn      = document.getElementById('btn-login');
+    const nom      = document.getElementById('nom').value.trim();
+    const prenom   = document.getElementById('prenom').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const erreur   = document.getElementById('erreur');
+    const btn      = document.getElementById('btn-login');
 
-        if (!username || !password) {
-            afficherErreur("Veuillez remplir tous les champs");
-            return;
-        }
-
-        btn.textContent = "Connexion...";
-        btn.disabled    = true;
-
-        try {
-            const formData = new FormData();
-            formData.append('username', username);
-            formData.append('password', password);
-
-            const response = await fetch('http://localhost:8000/api/login', {
-                method: 'POST',
-                body:   formData
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                localStorage.setItem('token', data.access_token);
-                localStorage.setItem('nom',   data.nom);
-                localStorage.setItem('role',  data.role);
-                window.location.href = 'index.html';
-            } else {
-                afficherErreur(data.detail || "Identifiants incorrects");
-            }
-        } catch (e) {
-            afficherErreur("Impossible de contacter le serveur");
-        }
-
-        btn.textContent = "Se connecter";
-        btn.disabled    = false;
+    if (!nom || !prenom || !password) {
+        afficherErreur("Veuillez remplir tous les champs");
+        return;
     }
+
+    // ✅ Combiner nom + prénom comme username
+    const username = prenom + ' ' + nom;  // ex: "Mohamed Alami"
+
+    btn.textContent = "Connexion...";
+    btn.disabled    = true;
+
+    try {
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('password', password);
+
+        const response = await fetch('http://localhost:8000/api/login', {
+            method: 'POST',
+            body:   formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            localStorage.setItem('token',    data.access_token);
+            localStorage.setItem('nom',      data.nom);
+            localStorage.setItem('role',     data.role);
+            localStorage.setItem('username', data.username);
+            window.location.href = 'index.html';
+        } else {
+            afficherErreur(data.detail || "Identifiants incorrects");
+        }
+    } catch (e) {
+        afficherErreur("Impossible de contacter le serveur");
+    }
+
+    btn.textContent = "Se connecter";
+    btn.disabled    = false;
+}
 
     function afficherErreur(msg) {
         const erreur = document.getElementById('erreur');

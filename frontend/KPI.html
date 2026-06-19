@@ -15,11 +15,85 @@
             justify-content: space-between;
             align-items: center;
         }
+        .kpi-header h1 { font-size: 17px; font-weight: 600; }
 
-        .kpi-header h1 {
-            font-size: 17px;
-            font-weight: 600;
+        /* ── BOUTONS PÉRIODE ── */
+        .periode-bar {
+            background: white;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #e5e7eb;
         }
+        .periode-bar span {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 500;
+            margin-right: 4px;
+        }
+        .btn-periode {
+            padding: 6px 16px;
+            border-radius: 99px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid #d1d5db;
+            background: white;
+            color: #374151;
+            transition: all 0.2s;
+        }
+        .btn-periode:hover { background: #f3f4f6; }
+        .btn-periode.actif {
+            background: #1a3a5c;
+            color: white;
+            border-color: #1a3a5c;
+        }
+        .periode-label {
+            margin-left: auto;
+            font-size: 11px;
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            padding: 16px 24px;
+        }
+        .kpi-card {
+            background: white;
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+        }
+        .kpi-card .kpi-label { font-size: 12px; color: #6b7280; margin-bottom: 8px; }
+        .kpi-card .kpi-value { font-size: 32px; font-weight: 700; }
+        .kpi-card .kpi-unit  { font-size: 12px; color: #9ca3af; margin-top: 4px; }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            padding: 0 24px 24px;
+        }
+        .chart-card {
+            background: white;
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+        }
+        .chart-card h3 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+        }
+        .chart-card canvas { max-height: 200px !important; }
 
         .btn-retour {
             background: rgba(255,255,255,0.15);
@@ -30,82 +104,9 @@
             font-size: 13px;
             cursor: pointer;
         }
+        .btn-retour:hover { background: rgba(255,255,255,0.25); }
 
-        .btn-retour:hover {
-            background: rgba(255,255,255,0.25);
-        }
-
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            padding: 16px 24px;
-        }
-
-        .kpi-card {
-            background: white;
-            border-radius: 10px;
-            padding: 16px;
-            border: 1px solid #e5e7eb;
-            text-align: center;
-        }
-
-        .kpi-card .kpi-label {
-            font-size: 12px;
-            color: #6b7280;
-            margin-bottom: 8px;
-        }
-
-        .kpi-card .kpi-value {
-            font-size: 32px;
-            font-weight: 700;
-        }
-
-        .kpi-card .kpi-unit {
-            font-size: 12px;
-            color: #9ca3af;
-            margin-top: 4px;
-        }
-
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            padding: 0 24px 24px;
-        }
-
-        .chart-card {
-            background: white;
-            border-radius: 10px;
-            padding: 16px;
-            border: 1px solid #e5e7eb;
-        }
-
-        .chart-card h3 {
-            font-size: 13px;
-            font-weight: 600;
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 12px;
-        }
-
-        .loading {
-            text-align: center;
-            color: #9ca3af;
-            padding: 40px;
-            font-size: 14px;
-        }
-        .chart-card canvas {
-    max-height: 200px !important;
-}
-
-.charts-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    padding: 0 24px 24px;
-}
+        .loading { opacity: 0.4; pointer-events: none; }
     </style>
 </head>
 <body>
@@ -114,187 +115,328 @@
     <div class="kpi-header">
         <div>
             <h1>📊 Tableau de bord KPIs — Supervision CNS</h1>
-            <p style="font-size:12px; opacity:0.7; margin-top:4px;">
-                Indicateurs de performance en temps réel
+            <p style="font-size:12px;opacity:0.7;margin-top:4px;">
+                Indicateurs de performance
             </p>
         </div>
-        <button class="btn-retour" onclick="window.location.href='index.html'">
-            ← Retour au dashboard
-        </button>
+        <div style="display:flex;gap:8px;">
+            <button class="btn-retour" onclick="window.location.href='index.html'">← Dashboard</button>
+            <button class="btn-retour" onclick="window.location.href='historique.html'">📋 Historique</button>
+        </div>
+    </div>
+
+    <!-- ── BOUTONS PÉRIODE ── -->
+    <div class="periode-bar">
+        <span>Période :</span>
+        <button class="btn-periode actif" onclick="changerPeriode('24h',   this)">24h</button>
+        <button class="btn-periode"       onclick="changerPeriode('7j',    this)">7 jours</button>
+        <button class="btn-periode"       onclick="changerPeriode('30j',   this)">30 jours</button>
+        <button class="btn-periode"       onclick="changerPeriode('tout',  this)">Tout</button>
+        <span class="periode-label" id="periode-label">Dernières 24 heures</span>
     </div>
 
     <!-- ── KPI CARDS ── -->
     <div class="kpi-grid">
         <div class="kpi-card">
             <p class="kpi-label">Total Alarmes</p>
-            <p class="kpi-value" id="kpi-total" style="color:#1a3a5c">...</p>
-            <p class="kpi-unit">depuis le début</p>
+            <p class="kpi-value" id="kpi-total" style="color:#1a3a5c">—</p>
+            <p class="kpi-unit"  id="kpi-total-unit">sur la période</p>
         </div>
         <div class="kpi-card">
             <p class="kpi-label">Alarmes Actives</p>
-            <p class="kpi-value" id="kpi-actives" style="color:#dc2626">...</p>
+            <p class="kpi-value" id="kpi-actives" style="color:#dc2626">—</p>
             <p class="kpi-unit">non acquittées</p>
         </div>
         <div class="kpi-card">
             <p class="kpi-label">Taux Disponibilité</p>
-            <p class="kpi-value" id="kpi-dispo" style="color:#16a34a">...</p>
+            <p class="kpi-value" id="kpi-dispo" style="color:#16a34a">—</p>
             <p class="kpi-unit">% systèmes OK</p>
         </div>
         <div class="kpi-card">
             <p class="kpi-label">MTTR Moyen</p>
-            <p class="kpi-value" id="kpi-mttr" style="color:#d97706">...</p>
-            <p class="kpi-unit">secondes</p>
+            <p class="kpi-value" id="kpi-mttr" style="color:#d97706">—</p>
+            <p class="kpi-unit">temps moyen résolution</p>
         </div>
     </div>
 
     <!-- ── GRAPHIQUES ── -->
     <div class="charts-grid">
-
-        <!-- Graphique 1 — Alarmes par système -->
         <div class="chart-card">
             <h3>Alarmes par système</h3>
             <canvas id="chart-systemes"></canvas>
         </div>
-
-        <!-- Graphique 2 — Répartition états -->
         <div class="chart-card">
             <h3>Répartition des états</h3>
             <canvas id="chart-etats"></canvas>
         </div>
-
-        <!-- Graphique 3 — Évolution alarmes -->
         <div class="chart-card">
             <h3>Évolution des alarmes</h3>
             <canvas id="chart-evolution"></canvas>
         </div>
-
-        <!-- Graphique 4 — MTTR par système -->
         <div class="chart-card">
-            <h3>MTTR par système (secondes)</h3>
+            <h3>MTTR par système (minutes)</h3>
             <canvas id="chart-mttr"></canvas>
         </div>
-
+        <div class="chart-card">
+            <h3>Diagramme de Pareto</h3>
+            <canvas id="chart-pareto"></canvas>
+        </div>
     </div>
 
     <script>
     const token = localStorage.getItem('token');
     if (!token) window.location.href = 'login.html';
 
-    const API = 'http://127.0.0.1:8000';
+    const API    = 'http://127.0.0.1:8000';
+    const charts = {};
+    let   periodeActuelle = '24h';
 
-    // ── Charger les KPIs ──
-    async function chargerKPIs() {
-    try {
-        const response1 = await fetch(API + '/api/kpi/alarmes');
-        if (!response1.ok) throw new Error('Erreur API alarmes');
-        const alarmes = await response1.json();
+    // ════════════════════════════════
+    // BOUTONS PÉRIODE
+    // ════════════════════════════════
+    const labelsperiode = {
+        '24h':  'Dernières 24 heures',
+        '7j':   '7 derniers jours',
+        '30j':  '30 derniers jours',
+        'tout': 'Tout l\'historique'
+    };
 
-        const response2 = await fetch(API + '/api/kpi/etats');
-        if (!response2.ok) throw new Error('Erreur API etats');
-        const etats = await response2.json();
+    function changerPeriode(periode, btn) {
+        periodeActuelle = periode;
 
-        // ── KPI Cards ──
-        document.getElementById('kpi-total').textContent   = alarmes.total;
-        document.getElementById('kpi-actives').textContent = alarmes.actives;
-        document.getElementById('kpi-mttr').textContent    = alarmes.mttr_secondes + 's';
-        document.getElementById('kpi-dispo').textContent   = etats.taux_disponibilite + '%';
+        // Mettre à jour boutons
+        document.querySelectorAll('.btn-periode').forEach(b => b.classList.remove('actif'));
+        btn.classList.add('actif');
 
-        // ── Graphiques ──
-        if (alarmes.par_systeme?.length > 0)
-            dessinerAlarmesSystemes(alarmes.par_systeme);
-        if (etats.repartition)
-            dessinerEtats(etats.repartition);
-        if (alarmes.evolution?.length > 0)
-            dessinerEvolution(alarmes.evolution);
-        if (alarmes.mttr_par_systeme?.length > 0)
-            dessinerMTTR(alarmes.mttr_par_systeme);
+        // Mettre à jour label
+        document.getElementById('periode-label').textContent = labelspiece = labelsperiode[periode];
 
-    } catch(e) {
-        console.error('Erreur:', e);
+        // Recharger les KPIs
+        chargerKPIs();
     }
-}
+
+    // ════════════════════════════════
+    // FORMATER MTTR
+    // ════════════════════════════════
+    function formaterMTTR(s) {
+        if (!s || s === 0) return '—';
+        s = Math.round(s);
+        if (s < 60)    return s + 's';
+        if (s < 3600)  return Math.floor(s/60) + 'min';
+        if (s < 86400) return Math.floor(s/3600) + 'h ' + Math.floor((s%3600)/60) + 'min';
+        return Math.floor(s/86400) + 'j ' + Math.floor((s%86400)/3600) + 'h';
+    }
+
+    // ════════════════════════════════
+    // CHARGER KPIs
+    // ════════════════════════════════
+    async function chargerKPIs() {
+        try {
+            const [r1, r2] = await Promise.all([
+                fetch(`${API}/api/kpi/alarmes?periode=${periodeActuelle}`),
+                fetch(`${API}/api/kpi/etats`)
+            ]);
+            if (!r1.ok || !r2.ok) throw new Error('Erreur API');
+
+            const alarmes = await r1.json();
+            const etats   = await r2.json();
+
+            // ── Cards ──
+            document.getElementById('kpi-total').textContent   = alarmes.total   || 0;
+            document.getElementById('kpi-actives').textContent = alarmes.actives || 0;
+            document.getElementById('kpi-dispo').textContent   = (etats.taux_disponibilite || 0) + '%';
+            document.getElementById('kpi-mttr').textContent    = formaterMTTR(alarmes.mttr_secondes);
+            document.getElementById('periode-label').textContent = labelsperiode[periodeActuelle];
+
+            // ── Graphiques ──
+            if (alarmes.par_systeme?.length > 0)     dessinerAlarmesSystemes(alarmes.par_systeme);
+            if (etats.repartition)                    dessinerEtats(etats.repartition);
+            if (alarmes.evolution?.length > 0)        dessinerEvolution(alarmes.evolution, periodeActuelle);
+            if (alarmes.mttr_par_systeme?.length > 0) dessinerMTTR(alarmes.mttr_par_systeme);
+            if (alarmes.par_systeme?.length > 0)      dessinerPareto(alarmes.par_systeme);
+
+        } catch(e) {
+            console.error('Erreur KPI:', e);
+        }
+    }
+
+    function detruireChart(id) {
+        if (charts[id]) { charts[id].destroy(); charts[id] = null; }
+    }
 
     // ── Graphique 1 — Alarmes par système ──
     function dessinerAlarmesSystemes(data) {
-        new Chart(document.getElementById('chart-systemes'), {
+        detruireChart('chart-systemes');
+        const sorted = [...data].sort((a, b) => b.total - a.total);
+        const max    = sorted[0]?.total || 0;
+        charts['chart-systemes'] = new Chart(
+            document.getElementById('chart-systemes'), {
             type: 'bar',
             data: {
-                labels: data.map(d => d.nom),
+                labels: sorted.map(d => d.nom),
                 datasets: [{
-                    label: 'Nombre d\'alarmes',
-                    data: data.map(d => d.total),
-                    backgroundColor: '#dc2626',
+                    label: 'Alarmes',
+                    data:  sorted.map(d => d.total),
+                    // ✅ Couleur selon proportion — dominant en rouge foncé
+                    backgroundColor: sorted.map(d =>
+                        d.total === max && max > 0 ? '#dc2626' :
+                        d.total >= max * 0.7        ? '#f87171' : '#93c5fd'
+                    ),
                     borderRadius: 6
                 }]
             },
             options: {
                 responsive: true,
-                plugins: { legend: { display: false } }
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
             }
         });
     }
 
     // ── Graphique 2 — Répartition états ──
     function dessinerEtats(data) {
-        new Chart(document.getElementById('chart-etats'), {
+        detruireChart('chart-etats');
+        const total = (data.ok||0) + (data.alarm||0) + (data.fault||0);
+        charts['chart-etats'] = new Chart(
+            document.getElementById('chart-etats'), {
             type: 'doughnut',
             data: {
                 labels: ['OK', 'ALARM', 'FAULT'],
                 datasets: [{
-                    data: [data.ok, data.alarm, data.fault],
+                    data: [data.ok||0, data.alarm||0, data.fault||0],
                     backgroundColor: ['#16a34a', '#dc2626', '#d97706'],
                     borderWidth: 0
                 }]
             },
-            options: { responsive: true }
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => {
+                                const pct = total > 0 ? Math.round(ctx.raw/total*100) : 0;
+                                return ` ${ctx.label}: ${ctx.raw} (${pct}%)`;
+                            }
+                        }
+                    }
+                }
+            }
         });
     }
 
     // ── Graphique 3 — Évolution ──
-    function dessinerEvolution(data) {
-        new Chart(document.getElementById('chart-evolution'), {
+    function dessinerEvolution(data, periode) {
+        detruireChart('chart-evolution');
+        charts['chart-evolution'] = new Chart(
+            document.getElementById('chart-evolution'), {
             type: 'line',
             data: {
                 labels: data.map(d => d.heure),
                 datasets: [{
                     label: 'Alarmes',
-                    data: data.map(d => d.total),
+                    data:  data.map(d => d.total),
                     borderColor: '#dc2626',
                     backgroundColor: 'rgba(220,38,38,0.1)',
                     fill: true,
-                    tension: 0.4
+                    tension: 0.4,
+                    pointRadius: data.length > 20 ? 2 : 4
                 }]
             },
-            options: { responsive: true }
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+            }
         });
     }
 
-    // ── Graphique 4 — MTTR par système ──
+    // ── Graphique 4 — MTTR ──
     function dessinerMTTR(data) {
-        new Chart(document.getElementById('chart-mttr'), {
+        detruireChart('chart-mttr');
+        const enMinutes = data.map(d => Math.round((d.mttr||0) / 60 * 10) / 10);
+        charts['chart-mttr'] = new Chart(
+            document.getElementById('chart-mttr'), {
             type: 'bar',
             data: {
                 labels: data.map(d => d.nom),
                 datasets: [{
-                    label: 'MTTR (secondes)',
-                    data: data.map(d => d.mttr),
+                    label: 'MTTR (min)',
+                    data:  enMinutes,
                     backgroundColor: '#d97706',
                     borderRadius: 6
                 }]
             },
             options: {
                 responsive: true,
-                plugins: { legend: { display: false } }
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, title: { display: true, text: 'minutes' } } }
             }
         });
     }
 
-    // ── Charger au démarrage ──
+    // ── Graphique 5 — Pareto ──
+    function dessinerPareto(data) {
+        detruireChart('chart-pareto');
+        const sorted    = [...data].sort((a, b) => b.total - a.total);
+        const total     = sorted.reduce((s, d) => s + d.total, 0);
+        let   cumul     = 0;
+        const pctCumule = sorted.map(d => {
+            cumul += total > 0 ? (d.total / total) * 100 : 0;
+            return Math.round(cumul);
+        });
+        const max = sorted[0]?.total || 0;
+
+        charts['chart-pareto'] = new Chart(
+            document.getElementById('chart-pareto'), {
+            type: 'bar',
+            data: {
+                labels: sorted.map(d => d.nom),
+                datasets: [
+                    {
+                        type: 'bar',
+                        label: 'Alarmes',
+                        data:  sorted.map(d => d.total),
+                        backgroundColor: sorted.map(d =>
+                            d.total === max && max > 0 ? '#dc2626' : '#0078d4'
+                        ),
+                        borderRadius: 6,
+                        yAxisID: 'y'
+                    },
+                    {
+                        type: 'line',
+                        label: '% Cumulé',
+                        data:  pctCumule,
+                        borderColor: '#e53935',
+                        pointBackgroundColor: '#e53935',
+                        tension: 0.3,
+                        yAxisID: 'y2'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: true } },
+                scales: {
+                    y:  { position: 'left',  beginAtZero: true,
+                          title: { display: true, text: 'Nb alarmes' } },
+                    y2: { position: 'right', min: 0, max: 100,
+                          title: { display: true, text: '% Cumulé' },
+                          grid: { drawOnChartArea: false } }
+                }
+            }
+        });
+    }
+
+    // Démarrage
+    labelsperiode = {
+        '24h':  'Dernières 24 heures',
+        '7j':   '7 derniers jours',
+        '30j':  '30 derniers jours',
+        'tout': 'Tout l\'historique'
+    };
+
     chargerKPIs();
-
-    // ── Actualiser toutes les 30s ──
-    setInterval(chargerKPIs, 10000);
+    setInterval(chargerKPIs, 30000);
     </script>
-
 </body>
 </html>
