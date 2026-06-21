@@ -16,6 +16,7 @@ SYSTEMES = {
     3: {"nom": "DME VOR",   "type": "Navigation",    "interface": "SNMP"},
     4: {"nom": "DME Glide", "type": "Navigation",    "interface": "SNMP"},
     5: {"nom": "VHF COM 1", "type": "Communication", "interface": "RS-232"},
+    6: {"nom": "ADS-B",     "type": "Surveillance",  "interface": "SNMP"},
     7: {"nom": "Glide",     "type": "Navigation",    "interface": "SNMP"},
 }
 
@@ -25,12 +26,12 @@ async def collecter_tous_systemes():
         cursor = conn.cursor()
 
         cursor.execute("""
-            SELECT DISTINCT ON (systeme_id)
-                systeme_id, etat, timestamp
-            FROM etats
-            WHERE systeme_id IN (1, 2, 3, 4, 5, 7)
-            ORDER BY systeme_id, timestamp DESC
-        """)
+    SELECT DISTINCT ON (systeme_id)
+        systeme_id, etat, timestamp
+    FROM etats
+    WHERE systeme_id IN (1, 2, 3, 4, 5, 6, 7)
+    ORDER BY systeme_id, timestamp DESC
+""")
 
         rows = cursor.fetchall()
         conn.close()

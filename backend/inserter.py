@@ -20,6 +20,7 @@ SYSTEMES_SNMP = [
     {"id": 2, "nom": "Localiser", "protocole": "SNMP", "frequence": 108.9, "signal_nominal": -70, "fiabilite": 0.97, "duree_panne": (3, 8),  "type_panne": ["ALARM", "FAULT"]},
     {"id": 3, "nom": "DME VOR",   "protocole": "SNMP", "frequence": 50.0,  "signal_nominal": -60, "fiabilite": 0.98, "duree_panne": (2, 5),  "type_panne": ["ALARM"]},
     {"id": 4, "nom": "DME Glide", "protocole": "SNMP", "frequence": 50.0,  "signal_nominal": -60, "fiabilite": 0.98, "duree_panne": (2, 5),  "type_panne": ["ALARM"]},
+    {"id": 6, "nom": "ADS-B",     "protocole": "SNMP", "frequence": 1090.0, "signal_nominal": -68, "fiabilite": 0.96, "duree_panne": (2, 6), "type_panne": ["ALARM", "FAULT"]},
     {"id": 7, "nom": "Glide",     "protocole": "SNMP", "frequence": 329.9, "signal_nominal": -72, "fiabilite": 0.97, "duree_panne": (3, 8),  "type_panne": ["ALARM", "FAULT"]},
 ]
 
