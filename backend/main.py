@@ -291,6 +291,24 @@ def get_kpi_alarmes(
               AND debut >= :depuis
         ) sub
     """), {"depuis": depuis}).scalar()
+    # Ajouter après le calcul du MTTR existant
+    mtbf = db.execute(text("""
+        SELECT AVG(duree_entre_pannes) FROM (
+            SELECT 
+            EXTRACT(EPOCH FROM (
+                debut - LAG(fin) OVER (
+                    PARTITION BY systeme_id 
+                    ORDER BY debut
+                )
+            )) as duree_entre_pannes
+            FROM alarmes
+            WHERE fin IS NOT NULL
+              AND debut IS NOT NULL
+              AND debut >= :depuis
+        ) sub
+            WHERE duree_entre_pannes > 0
+        AND duree_entre_pannes < 604800
+        """), {"depuis": depuis}).scalar()
 
     # ── Alarmes par système ──
     par_systeme = db.query(
@@ -345,6 +363,7 @@ def get_kpi_alarmes(
         "actives":       actives,
         "periode":       periode,
         "mttr_secondes": round(float(mttr or 0), 1),
+        "mtbf_secondes": round(float(mtbf or 0), 1),
         "par_systeme":   [{"nom": r.nom, "total": r.total} for r in par_systeme],
         "evolution":     [{"heure": r.heure, "total": r.total} for r in evolution],
         "mttr_par_systeme": [
@@ -428,92 +447,6 @@ def get_predictions(db: Session = Depends(get_db)):
         for r in resultats
     ]
 
-# ── À AJOUTER dans main.py ──
-
-# ════════════════════════════════════════════════════════
-# SCÉNARIOS DÉMO — déclenchables depuis le dashboard
-# ════════════════════════════════════════════════════════
-SCENARIOS_DEMO = {
-    "nominal": {
-        "nom": "Nominal — Tous OK",
-        "etats": {1: "OK", 2: "OK", 3: "OK", 4: "OK", 5: "OK", 7: "OK"}
-    },
-    "alarm": {
-        "nom": "ALARM — Dégradation VHF COM 1",
-        "etats": {1: "OK", 2: "OK", 3: "ALARM", 4: "OK", 5: "ALARM", 7: "OK"}
-    },
-    "fault": {
-        "nom": "FAULT — Panne critique ILS",
-        "etats": {1: "OK", 2: "FAULT", 3: "OK", 4: "OK", 5: "ALARM", 7: "FAULT"}
-    }
-}
-
-@app.post("/api/scenario/{nom_scenario}")
-def declencher_scenario(
-    nom_scenario: str,
-    db: Session = Depends(get_db),
-    operateur = Depends(get_operateur_connecte)
-):
-    # Seul l'admin peut déclencher un scénario
-    if operateur.role != "admin":
-        raise HTTPException(
-            status_code=403,
-            detail="Accès refusé — admin uniquement"
-        )
-
-    scenario = SCENARIOS_DEMO.get(nom_scenario)
-    if not scenario:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Scénario '{nom_scenario}' introuvable"
-        )
-
-    resultats = []
-
-    for sys_id, etat in scenario["etats"].items():
-        # INSERT état
-        nouvel_etat = Etat(
-            systeme_id   = sys_id,
-            etat         = etat,
-            valeur_brute = f"Scénario:{nom_scenario}"
-        )
-        db.add(nouvel_etat)
-
-        # Gestion alarmes
-        alarme_existante = db.query(Alarme).filter(
-            Alarme.systeme_id == sys_id,
-            Alarme.acquitte   == False
-        ).first()
-
-        if etat in ["ALARM", "FAULT"]:
-            if not alarme_existante:
-                alarme = Alarme(
-                    systeme_id  = sys_id,
-                    type_alarme = f"Scénario démo - {etat}",
-                    acquitte    = False
-                )
-                db.add(alarme)
-                resultats.append(f"{sys_id} → {etat} (alarme créée)")
-        else:
-            if alarme_existante:
-                alarme_existante.fin = datetime.now()
-                resultats.append(f"{sys_id} → OK (alarme fermée)")
-
-    db.commit()
-
-    return {
-        "message":   f"Scénario '{scenario['nom']}' appliqué",
-        "operateur": operateur.nom,
-        "resultats": resultats
-    }
-
-@app.get("/api/scenarios")
-def get_scenarios(operateur = Depends(get_operateur_connecte)):
-    """Liste les scénarios disponibles"""
-    return [
-        {"id": k, "nom": v["nom"]}
-        for k, v in SCENARIOS_DEMO.items()
-    ]
 # ── WEBSOCKET ──
 @app.websocket("/ws/etats")
 async def websocket_etats(websocket: WebSocket):
