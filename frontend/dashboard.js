@@ -129,7 +129,16 @@ function mettreAJourInterface(systemes) {
         });
         const badgeClass = sys.etat === 'ALARM' ? 'badge-alarm' : 'badge-fault';
         const labels     = { ALARM: 'ALARME', FAULT: 'DÉFAUT' };
-        const typeTexte  = sys.etat === 'ALARM' ? 'Détection signal' : 'Relais ouvert';
+        const typesAlarme = {
+    1: { ALARM: 'Dégradation signal VHF',         FAULT: 'Perte signal VHF' },
+    2: { ALARM: 'Dégradation alignement LOC',      FAULT: 'Perte alignement LOC' },
+    3: { ALARM: 'Dégradation mesure de distance',  FAULT: 'Perte mesure de distance' },
+    4: { ALARM: 'Dégradation mesure de distance',  FAULT: 'Perte mesure de distance' },
+    5: { ALARM: 'Dégradation puissance émission',  FAULT: 'Perte émission radio' },
+    7: { ALARM: 'Dégradation pente de descente',   FAULT: 'Perte pente de descente' },
+    8: { ALARM: 'Dégradation réception ADS-B',     FAULT: 'Perte réception ADS-B' },
+};
+      const typeTexte = typesAlarme[sys.id]?.[sys.etat] || 'Dégradation détectée';
 
         tbody.innerHTML += `
             <tr id="ligne-${sys.id}">
@@ -182,7 +191,16 @@ function afficherAlarmesBDD(alarmes) {
     alarmes.forEach(sys => {
     const badgeClass = sys.etat === 'ALARM' ? 'badge-alarm' : 'badge-fault';
     const labels     = { ALARM: 'ALARME', FAULT: 'DÉFAUT' };
-    const typeTexte  = sys.etat === 'ALARM' ? 'Détection signal' : 'Relais ouvert';
+    const typesAlarme = {
+    1: { ALARM: 'Dégradation signal VHF',         FAULT: 'Perte signal VHF' },
+    2: { ALARM: 'Dégradation alignement LOC',      FAULT: 'Perte alignement LOC' },
+    3: { ALARM: 'Dégradation mesure de distance',  FAULT: 'Perte mesure de distance' },
+    4: { ALARM: 'Dégradation mesure de distance',  FAULT: 'Perte mesure de distance' },
+    5: { ALARM: 'Dégradation puissance émission',  FAULT: 'Perte émission radio' },
+    7: { ALARM: 'Dégradation pente de descente',   FAULT: 'Perte pente de descente' },
+    8: { ALARM: 'Dégradation réception ADS-B',     FAULT: 'Perte réception ADS-B' },
+};
+      const typeTexte = typesAlarme[sys.id]?.[sys.etat] || 'Dégradation détectée';
     
     // ✅ Heure réelle au moment de l'affichage
     const heureReelle = new Date().toLocaleString('fr-FR', {
